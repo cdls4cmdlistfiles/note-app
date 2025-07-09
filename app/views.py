@@ -13,11 +13,13 @@ def home():
     return render_template('content/partials/home.html') if request.headers.get('HX-Request') else render_template('content/home.html')
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
 
 @app.route('/new-note', methods=['GET', 'POST'])
+@login_required
 def new_note():
     if request.method == 'POST':
         title = request.form.get('note-title')
@@ -29,6 +31,7 @@ def new_note():
     return render_template('content/new_note.html')
 
 @app.route('/delete-note/<int:id>', methods=['DELETE'])
+@login_required
 def delete_note(id):
     note = Note.query.get_or_404(id)
     note.user_id = current_user.id
@@ -37,6 +40,7 @@ def delete_note(id):
     return ""
 
 @app.route('/about/<int:id>')
+@login_required
 def about_note(id):
     note = Note.query.get_or_404(id)
     if request.headers.get('HX-Request', '').lower() == 'true':
@@ -45,6 +49,7 @@ def about_note(id):
         return render_template('content/about_note.html', note=note)
     
 @app.route('/search')
+@login_required
 def search_notes():
     search_term = request.args.get('q', '')
     user_id = current_user.id  # Assuming you're using Flask-Login
@@ -60,6 +65,7 @@ def search_notes():
     return render_template('content/partials/search_notes.html', notes=notes)
 
 @app.route('/edit-note/<int:id>', methods=['PUT','GET'])
+@login_required
 def edit_note(id):
     note = Note.query.get_or_404(id)
     if request.method == 'PUT':
