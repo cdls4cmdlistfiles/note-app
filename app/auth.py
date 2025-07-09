@@ -6,16 +6,6 @@ from app.models import User
 
 app = Blueprint('auth',__name__)
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        new_user = User(username=form.username.data)
-        new_user.set_password(form.password.data)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('auth.login'))
-    return render_template('auth/register.html', title='Register', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -27,3 +17,14 @@ def login():
             return redirect(url_for('views.home')) 
     return render_template('auth/login.html', title='Login', form=form)
 
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        new_user = User(username=form.username.data)
+        new_user.set_password(form.password.data)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('auth.login'))
+    return render_template('auth/register.html', title='Register', form=form)
