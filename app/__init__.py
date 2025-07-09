@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 db_path = os.path.join(os.path.dirname(__file__), '../database.db')
 app.config['SECRET_KEY'] = '%&F^*GH()J'
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'  
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///tmp/{db_path}'  
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate.init_app(app, db)
