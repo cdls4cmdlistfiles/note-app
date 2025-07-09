@@ -1,0 +1,7 @@
+{% if notes %} {% for note in notes %}
+    {% include "content/partials/note.html" %}
+{% endfor %} {% else %}
+<tr>
+  <p>No notes found matching your search.</p>
+</tr>
+{% endif %}

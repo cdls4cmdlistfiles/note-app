@@ -1,0 +1,272 @@
+<style>
+  /* Search indicator styles */
+  .htmx-request .search-indicator {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .search-indicator {
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .search-indicator .spinner {
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    border-top: 2px solid #3498db;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Form and input styles */
+  #note-form {
+    margin-bottom: 1.5rem;
+  }
+  
+  #note-form button {
+    padding: 0.75rem 1.5rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  #note-form button:hover {
+    background-color: #3e8e41;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    box-sizing: border-box;
+    transition: border 0.3s;
+  }
+  
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  }
+  
+  /* Table container */
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin: 1rem 0;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    background: white;
+  }
+  
+  .notes-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+  }
+  
+  .notes-table th {
+    background-color: #f5f5f5;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+  }
+  
+  .notes-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+  
+  .notes-table tr:hover td {
+    background-color: #f9f9f9;
+  }
+  
+  .notes-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .table-container {
+      box-shadow: none;
+      border: 1px solid #eee;
+    }
+    
+    .notes-table {
+      min-width: 100%;
+    }
+    
+    .notes-table thead {
+      display: none;
+    }
+    
+    .notes-table tr {
+      display: block;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .notes-table td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 15px;
+      border-bottom: none;
+    }
+    
+    .notes-table td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .notes-table td.actions {
+      justify-content: flex-end;
+      border-top: 1px dashed #ddd;
+      margin-top: 5px;
+      padding-top: 10px;
+    }
+    
+    .notes-table td.actions::before {
+      content: none;
+    }
+    
+    /* Adjust form elements for mobile */
+    #note-form button {
+      width: 100%;
+      justify-content: center;
+      padding: 1rem;
+    }
+  }
+  
+  /* Button styles */
+  .delete-btn {
+    padding: 8px 12px;
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+  }
+  
+  .delete-btn:hover {
+    background-color: #cc0000;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .note-title {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  
+  .note-title:hover {
+    color: #4CAF50;
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 480px) {
+    .delete-btn .btn-text {
+      display: none;
+    }
+    
+    .delete-btn {
+      padding: 8px;
+      width: 36px;
+      height: 36px;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .delete-btn i {
+      margin: 0;
+    }
+  }
+</style>
+
+<div id="note-form">
+  <button 
+    hx-get="/new-note"
+    hx-swap="innerHTML"
+    hx-target="#note-form"
+    class="new-note-btn"
+  >
+    <i class="fas fa-plus"></i>
+    <span>New Note</span>
+  </button>
+</div>
+
+<div class="search-container">
+  <input type="text" 
+         name="q" 
+         hx-get="/search" 
+         hx-trigger="keyup changed delay:500ms" 
+         hx-target="#notes"
+         hx-indicator=".search-indicator"
+         placeholder="Search notes..."
+         aria-label="Search notes">
+  
+  <div class="search-indicator">
+    <div class="spinner"></div>
+    <span>Searching...</span>
+  </div>
+</div>
+
+<div class="table-container">
+  <table class="notes-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Date Added</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="notes">
+      {% for note in current_user.notes %}
+        {% include "content/partials/note.html" %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+<style>
+    tr.htmx-swapping td {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+    }
+</style>
